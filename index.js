@@ -4,7 +4,7 @@ var cors = require("cors");
 require("dotenv").config();
 connectToMongo();
 const app = express();
-const port = 5000 || process.env.PORT;
+const port = 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -18,6 +18,6 @@ app.use("/api", parse);
 
 // app.use("/api/contact", require("./routes/contact"));
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log(`PharamaWeb backend listening at http://localhost:${port}`);
 });
