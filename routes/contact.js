@@ -34,8 +34,24 @@ const { body, validationResult } = require("express-validator");
 //   }
 // });
 
+router.get("/fetchallcontact", async (req, res) => {
+  let statusDescription = {};
+  try {
+    const contact = await Contact.find({});
+    statusDescription = {
+      statusMessage: "Success!!",
+      statusCode: "200",
+    };
+    res.status(200).send({ statusDescription, contacts: contact });
+    // res.json(contact);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 router.post(
-  "/contact",
+  "/sendcontact",
   [
     body("name", "Enter a valid name").isLength({ min: 3 }),
     body("email", "Email must be atleast 5 characters").isLength({
@@ -49,22 +65,37 @@ router.post(
     }),
   ],
   async (req, res) => {
-    let success = false;
+    let statusDescription = {};
+    const err = [];
     try {
       const { name, email, phone, message } = req.body;
 
       // If there are errors, return Bad request and the errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        errors.array().forEach((element) => {
+          err.push(element.msg);
+        });
+        let statusDescription = {
+          statusCode: 400,
+          statusMessage: err,
+        };
+        return res.status(400).json({
+          statusDescription,
+        });
       }
       let contact = await Contact.findOne({ email: req.body.email });
 
       if (contact) {
-        return res.status(400).json({
-          success,
-          error: "Your Msg have been have send already",
-        });
+        statusDescription = {
+          statusMessage: "Your Msg have been send already.!!",
+          statusCode: "409",
+        };
+        return res.status(200).send({ statusDescription });
+        // return res.status(400).json({
+        //   success,
+        //   error: "Your Msg have been have send already",
+        // });
       }
       contact = new Contact({
         name,
@@ -73,8 +104,12 @@ router.post(
         message,
       });
       const savedContact = await contact.save();
-      success = true;
-      res.json({ success: savedContact });
+      statusDescription = {
+        statusCode: 201,
+        statusMessage:
+          "Message Delivered, We will try to contact you as soon as possible !!",
+      };
+      res.json({ statusDescription, savedContact });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
