@@ -1,11 +1,12 @@
 {
-  "name": "inotebook-backend",
+  "name": "pharmaWrb-backend",
   "version": "1.0.0",
-  "description": "iNotebook - Your notebook on the cloud",
+  "description": "PharmaWeb- Pharmaceutical B2B Marketplace & Pharma Directory",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
